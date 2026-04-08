@@ -1,0 +1,204 @@
+0. ЧТО ТЫ СТРОИШЬ (зафиксируй)
+
+👉 ReloAI = AI SaaS с:
+
+auth
+историей
+dashboard
+AI логикой
+
+Если этого нет → это не проект, а игрушка.
+
+🔥 1. СТЕК (НЕ ОТКЛОНЯЙСЯ)
+Next.js (App Router)
+TypeScript
+Supabase (auth + DB)
+OpenAI API
+Vercel
+🧠 2. СТРУКТУРА ПРОЕКТА (нормальная, не хаос)
+src/
+  app/
+    layout.tsx
+    page.tsx
+
+    login/
+      page.tsx
+
+    register/
+      page.tsx
+
+    dashboard/
+      page.tsx
+
+    api/
+      generate/
+        route.ts
+
+  components/
+    ui/
+    dashboard/
+    forms/
+
+  lib/
+    supabaseClient.ts
+    openai.ts
+    db.ts
+
+  types/
+    index.ts
+
+  hooks/
+    useAuth.ts
+💣 3. БАЗА ДАННЫХ (Schema — ОБЯЗАТЕЛЬНО)
+
+Создаёшь проект в Supabase → SQL Editor → вставляешь:
+
+create table requests (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id),
+  input text,
+  output text,
+  type text,
+  created_at timestamp default now()
+);
+🔥 4. SUPABASE CLIENT
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+🔐 5. AUTH (минимально рабочий)
+регистрация
+await supabase.auth.signUp({
+  email,
+  password,
+})
+логин
+await supabase.auth.signInWithPassword({
+  email,
+  password,
+})
+💣 6. API ROUTE (ядро проекта)
+
+/app/api/generate/route.ts
+
+import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
+import { supabase } from '@/lib/supabaseClient'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+})
+
+export async function POST(req: Request) {
+  const { input, type, userId } = await req.json()
+
+  let prompt = ''
+
+  if (type === 'country') {
+    prompt = `Give relocation analysis for ${input}`
+  }
+
+  if (type === 'plan') {
+    prompt = `Create relocation plan for ${input}`
+  }
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  const output = response.choices[0].message.content
+
+  await supabase.from('requests').insert({
+    user_id: userId,
+    input,
+    output,
+    type,
+  })
+
+  return NextResponse.json({ output })
+}
+🧠 7. FRONTEND (логика, не дизайн)
+форма
+const handleSubmit = async () => {
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    body: JSON.stringify({
+      input,
+      type,
+      userId,
+    }),
+  })
+
+  const data = await res.json()
+  setResult(data.output)
+}
+📊 8. DASHBOARD (ключевой элемент)
+получение истории
+const { data } = await supabase
+  .from('requests')
+  .select('*')
+  .eq('user_id', user.id)
+  .order('created_at', { ascending: false })
+отображение
+список запросов
+кнопка “open”
+preview текста
+💣 9. РЕЖИМЫ (чтобы не был тупым чатом)
+
+Добавь select:
+
+<select>
+  <option value="country">Country Analysis</option>
+  <option value="plan">Relocation Plan</option>
+</select>
+⚠️ 10. LIMIT (важно для SaaS)
+const { count } = await supabase
+  .from('requests')
+  .select('*', { count: 'exact', head: true })
+  .eq('user_id', user.id)
+
+if (count > 10) {
+  return alert('Limit reached')
+}
+🔥 11. PROTECTED ROUTES
+
+Если нет юзера:
+
+if (!user) {
+  redirect('/login')
+}
+🌐 12. DEPLOY
+заливаешь в GitHub
+деплоишь на Vercel
+добавляешь ENV:
+SUPABASE URL
+SUPABASE KEY
+OPENAI KEY
+💣 13. README (не облажайся)
+# ReloAI
+
+AI-powered SaaS for relocation planning
+
+## Features
+- Authentication
+- AI workflows (analysis, planning)
+- History tracking
+- Dashboard
+
+## Tech
+Next.js, Supabase, OpenAI
+
+## Demo
+link
+🧨 14. ФИНАЛЬНАЯ ПРОВЕРКА
+
+Если у тебя есть:
+
+✅ login
+✅ dashboard
+✅ history
+✅ AI logic (НЕ чат)
+✅ сохранение
