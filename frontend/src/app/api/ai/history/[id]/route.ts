@@ -4,12 +4,12 @@ import { requireAuth } from '@/lib/server/auth';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } | null }
+  context: { params: Promise<{ id: string }> }
 ) {
   const { user, error } = await requireAuth(request);
   if (error || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const id = context?.params?.id;
+  const { id } = await context.params;
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
   const record = await prisma.relocationRequest.findFirst({
