@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0d0f14;
+  --surface: #161a22;
+  --surface2: #1e2330;
+  --border: #252d3d;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --brand: #6366f1;
+  --brand-hover: #4f46e5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Markdown guide styles */
+.guide-content h2 {
+  @apply text-xl font-bold text-white mt-8 mb-3 pb-2 border-b border-[#252d3d];
+}
+.guide-content h3 {
+  @apply text-lg font-semibold text-indigo-300 mt-5 mb-2;
+}
+.guide-content p {
+  @apply text-slate-300 leading-relaxed mb-3;
+}
+.guide-content ul, .guide-content ol {
+  @apply pl-5 mb-4 space-y-1;
+}
+.guide-content li {
+  @apply text-slate-300;
+}
+.guide-content strong {
+  @apply text-white font-semibold;
+}
+.guide-content em {
+  @apply text-indigo-300;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 3px; }
+
+/* Streaming cursor blink */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor-blink::after {
+  content: '▌';
+  animation: blink 1s step-start infinite;
+  color: #6366f1;
+}

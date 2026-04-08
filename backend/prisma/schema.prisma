@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+model User {
+  id                   String               @id @default(cuid())
+  email                String               @unique
+  password             String
+  name                 String?
+  plan                 Plan                 @default(FREE)
+  monthlyUsage         Int                  @default(0)
+  usageResetAt         DateTime             @default(now())
+  stripeCustomerId     String?              @unique
+  stripeSubscriptionId String?              @unique
+  subscriptionStatus   String?
+  analyses             RelocationRequest[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+}
+
+model RelocationRequest {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profession String
+  budget     String
+  input      String   @db.Text
+  result     String   @db.Text
+  tokens     Int      @default(0)
+  createdAt  DateTime @default(now())
+}
