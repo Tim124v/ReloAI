@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 5000",
+    "dev": "next dev -p 5000 -H 0.0.0.0",
     "build": "prisma generate && next build",
-    "start": "next start -p 5000",
+    "start": "next start -p 5000 -H 0.0.0.0",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -15,7 +15,7 @@
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.331.0",
-    "next": "^14.2.29",
+    "next": "^16.2.2",
     "openai": "^6.33.0",
     "prisma": "^5.22.0",
     "react": "^18",
