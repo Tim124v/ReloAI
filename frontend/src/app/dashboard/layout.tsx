@@ -16,7 +16,7 @@ function LangSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-[#1e2330] transition-all text-xs"
+        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.05] transition-all text-xs"
       >
         <span>{current.flag}</span>
         <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -99,8 +99,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="hidden sm:flex items-center gap-2">
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
               user.plan === 'PRO'
-                ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-700/50'
-                : 'bg-white/5 text-slate-400 border border-white/8'
+                ? 'bg-indigo-900/60 text-indigo-300'
+                : 'bg-white/[0.06] text-slate-400'
             }`}>
               {user.plan}
             </span>

@@ -40,7 +40,7 @@ function ScoreBar({ score }: { score: number }) {
   const color = score >= 85 ? 'bg-green-500' : score >= 70 ? 'bg-indigo-500' : 'bg-amber-500';
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-[#252d3d] rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-white/8 rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${score}%` }} />
       </div>
       <span className="text-xs font-bold text-white w-8 text-right">{score}</span>
@@ -52,14 +52,14 @@ function CountryCard({ country, rank }: { country: RelocationResult['countries']
   const [expanded, setExpanded] = useState(rank === 0);
 
   return (
-    <div className={`rounded-xl border transition-all ${rank === 0 ? 'border-indigo-700/60 bg-indigo-900/10' : 'border-[#252d3d] bg-[#161a22]'}`}>
+    <div className={`rounded-xl transition-all ${rank === 0 ? 'bg-indigo-900/15 shadow-lg shadow-indigo-500/10' : 'bg-[#161a22]'}`}>
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">
           <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-            rank === 0 ? 'bg-indigo-600 text-white' : 'bg-[#252d3d] text-slate-400'
+            rank === 0 ? 'bg-indigo-600 text-white' : 'bg-white/8 text-slate-400'
           }`}>
             {rank + 1}
           </div>
@@ -78,7 +78,7 @@ function CountryCard({ country, rank }: { country: RelocationResult['countries']
       </button>
 
       {expanded && (
-        <div className="px-5 pb-5 border-t border-[#252d3d]">
+        <div className="px-5 pb-5 border-t border-white/5">
           {/* Reasons */}
           <div className="mt-4 mb-4">
             <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Why this country</p>
@@ -93,11 +93,11 @@ function CountryCard({ country, rank }: { country: RelocationResult['countries']
 
           {/* Visa + Cost */}
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="p-3 rounded-lg bg-[#0d0f14] border border-[#252d3d]">
+            <div className="p-3 rounded-lg bg-white/[0.04]">
               <p className="text-xs text-slate-500 mb-1">Visa path</p>
               <p className="text-sm text-slate-200">{country.visa}</p>
             </div>
-            <div className="p-3 rounded-lg bg-[#0d0f14] border border-[#252d3d]">
+            <div className="p-3 rounded-lg bg-white/[0.04]">
               <p className="text-xs text-slate-500 mb-1">Monthly cost</p>
               <p className="text-sm text-slate-200 font-semibold">{country.cost}</p>
             </div>
@@ -207,8 +207,8 @@ export default function DashboardPage() {
       )}
 
       {/* Input form */}
-      <div className="bg-[#161a22] border border-[#252d3d] rounded-xl overflow-hidden mb-6">
-        <div className="px-5 py-4 border-b border-[#252d3d] flex items-center justify-between">
+      <div className="bg-[#161a22] rounded-xl overflow-hidden mb-6 shadow-xl shadow-black/20">
+        <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-indigo-400" />
             <h2 className="font-semibold">Your relocation profile</h2>
@@ -229,7 +229,7 @@ export default function DashboardPage() {
               {EXAMPLE_PROFILES.map((ex) => (
                 <button
                   key={ex.profession} onClick={() => applyExample(ex)}
-                  className="px-2.5 py-1 text-xs bg-[#1e2330] hover:bg-[#252d3d] border border-[#252d3d] rounded-lg text-slate-400 hover:text-white transition-colors"
+                  className="px-2.5 py-1 text-xs bg-white/[0.05] hover:bg-white/[0.09] rounded-lg text-slate-400 hover:text-white transition-colors"
                 >
                   {ex.profession}
                 </button>
@@ -243,7 +243,7 @@ export default function DashboardPage() {
               <input
                 value={profession} onChange={(e) => setProfession(e.target.value)}
                 placeholder="e.g. Software Engineer, Freelancer"
-                className="w-full px-3 py-2 bg-[#0d0f14] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm"
+                className="w-full px-3 py-2 bg-[#0d0f14] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm transition-colors"
               />
             </div>
             <div>
@@ -251,7 +251,7 @@ export default function DashboardPage() {
               <input
                 value={budget} onChange={(e) => setBudget(e.target.value)}
                 placeholder="e.g. $2,000–3,000/month"
-                className="w-full px-3 py-2 bg-[#0d0f14] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm"
+                className="w-full px-3 py-2 bg-[#0d0f14] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm transition-colors"
               />
             </div>
           </div>
@@ -260,7 +260,7 @@ export default function DashboardPage() {
             <label className="block text-xs text-slate-500 mb-1.5">Working language</label>
             <select
               value={language} onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0d0f14] border border-[#252d3d] rounded-lg text-white focus:outline-none focus:border-indigo-500 text-sm"
+              className="w-full px-3 py-2 bg-[#0d0f14] border border-white/8 rounded-lg text-white focus:outline-none focus:border-indigo-500 text-sm transition-colors"
             >
               {LANGUAGE_OPTIONS.map((l) => <option key={l}>{l}</option>)}
             </select>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
             <textarea
               value={goals} onChange={(e) => setGoals(e.target.value)} rows={3}
               placeholder="e.g. Low income tax, warm climate, good healthcare, EU residency, English-speaking community, safe for family..."
-              className="w-full px-3 py-2 bg-[#0d0f14] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm resize-none"
+              className="w-full px-3 py-2 bg-[#0d0f14] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm resize-none transition-colors"
             />
           </div>
 
@@ -290,7 +290,7 @@ export default function DashboardPage() {
 
       {/* Loading state */}
       {loading && (
-        <div className="bg-[#161a22] border border-[#252d3d] rounded-xl p-8 text-center">
+        <div className="bg-[#161a22] rounded-xl p-8 text-center shadow-xl shadow-black/20">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-400 mx-auto mb-4" />
           <p className="text-slate-300 font-medium">Analyzing 195 countries for your profile…</p>
           <p className="text-slate-500 text-sm mt-1">Checking visas, costs, tax regimes, and quality of life</p>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
       {result && !loading && (
         <div className="space-y-6">
           {/* Summary */}
-          <div className="p-5 bg-indigo-900/10 border border-indigo-700/30 rounded-xl">
+          <div className="p-5 bg-indigo-900/15 rounded-xl">
             <p className="text-xs text-indigo-400 uppercase tracking-wider mb-2">Personalized summary</p>
             <p className="text-slate-200 leading-relaxed">{result.summary}</p>
           </div>
@@ -319,15 +319,15 @@ export default function DashboardPage() {
           </div>
 
           {/* Relocation plan */}
-          <div className="bg-[#161a22] border border-[#252d3d] rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#252d3d]">
+          <div className="bg-[#161a22] rounded-xl overflow-hidden shadow-xl shadow-black/20">
+            <div className="px-5 py-4 border-b border-white/5">
               <h3 className="font-semibold text-sm">Your relocation roadmap</h3>
             </div>
             <div className="p-5">
               <div className="space-y-3">
                 {result.plan.map((step, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-indigo-900/50 border border-indigo-700/50 flex items-center justify-center text-xs font-bold text-indigo-300 shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-indigo-900/60 flex items-center justify-center text-xs font-bold text-indigo-300 shrink-0">
                       {i + 1}
                     </div>
                     <p className="text-sm text-slate-300 pt-0.5">{step}</p>
@@ -338,8 +338,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Checklist */}
-          <div className="bg-[#161a22] border border-[#252d3d] rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#252d3d] flex items-center justify-between">
+          <div className="bg-[#161a22] rounded-xl overflow-hidden shadow-xl shadow-black/20">
+            <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
               <h3 className="font-semibold text-sm">Pre-move checklist</h3>
               <span className="text-xs text-slate-500">
                 {checkedItems.size}/{result.checklist.length} done
@@ -350,10 +350,10 @@ export default function DashboardPage() {
                 {result.checklist.map((item, i) => (
                   <button
                     key={i} onClick={() => toggleCheck(i)}
-                    className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-[#1e2330] transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.04] transition-colors text-left"
                   >
                     <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                      checkedItems.has(i) ? 'bg-green-600 border-green-600' : 'border-[#252d3d]'
+                      checkedItems.has(i) ? 'bg-green-600 border-green-600' : 'border-white/20'
                     }`}>
                       {checkedItems.has(i) && <CheckCircle2 className="w-3 h-3 text-white" />}
                     </div>

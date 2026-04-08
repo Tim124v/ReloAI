@@ -49,16 +49,16 @@ function LanguageSwitcher() {
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-[#2a3347] rounded-xl overflow-hidden">
+    <div className="rounded-xl overflow-hidden bg-white/[0.03]">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-white/3 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-white/[0.03] transition-colors"
       >
         <span className="font-medium text-white text-sm pr-4">{q}</span>
         <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="px-6 pb-5 text-slate-400 text-sm leading-relaxed border-t border-[#2a3347]">
+        <div className="px-6 pb-5 text-slate-400 text-sm leading-relaxed border-t border-white/5">
           <div className="pt-4">{a}</div>
         </div>
       )}
@@ -142,7 +142,7 @@ export default function LandingPage() {
           </Link>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 px-7 py-3.5 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/8 rounded-xl text-slate-300 hover:text-white transition-all backdrop-blur-sm text-sm"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/6 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition-all backdrop-blur-sm text-sm"
           >
             {t.hero.ctaSecondary}
           </Link>
@@ -156,9 +156,9 @@ export default function LandingPage() {
             {t.profiles.items.slice(0, 4).map((ex, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3.5 rounded-xl bg-white/4 border border-white/8 backdrop-blur-sm hover:bg-white/6 transition-all"
+                className="flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.07] backdrop-blur-sm transition-all"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center shrink-0">
                   <MapPin className="w-3.5 h-3.5 text-indigo-400" />
                 </div>
                 <div className="text-left min-w-0">
@@ -179,7 +179,7 @@ export default function LandingPage() {
       <section className="relative max-w-4xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {stats.map(({ icon: Icon, value, label }) => (
-            <div key={label} className="text-center p-5 rounded-2xl bg-white/3 border border-white/6 backdrop-blur-sm">
+            <div key={label} className="text-center p-5 rounded-2xl bg-white/[0.03] backdrop-blur-sm">
               <Icon className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
               <p className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{value}</p>
               <p className="text-xs text-slate-500 mt-1">{label}</p>
@@ -198,7 +198,7 @@ export default function LandingPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {t.how.steps.map((step, i) => (
-            <div key={i} className="relative p-6 rounded-2xl bg-gradient-to-b from-white/5 to-white/2 border border-white/8 backdrop-blur-sm group hover:border-indigo-500/30 transition-all">
+            <div key={i} className="relative p-6 rounded-2xl bg-gradient-to-b from-white/5 to-white/2 backdrop-blur-sm group hover:from-white/7 hover:to-white/3 transition-all">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-sm font-bold shadow-lg shadow-indigo-500/20">
                   {i + 1}
@@ -229,9 +229,9 @@ export default function LandingPage() {
           ].map(({ icon: Icon, title, desc }) => (
             <div
               key={title}
-              className="p-5 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/8 hover:border-indigo-500/30 transition-all group"
+              className="p-5 rounded-2xl bg-gradient-to-b from-white/5 to-transparent hover:from-white/7 transition-all group"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:from-indigo-500/30 group-hover:to-violet-500/30 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center mb-4 group-hover:from-indigo-500/30 group-hover:to-violet-500/30 transition-all">
                 <Icon className="w-5 h-5 text-indigo-400" />
               </div>
               <h3 className="font-semibold text-white mb-2 text-sm">{title}</h3>
@@ -250,7 +250,7 @@ export default function LandingPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Countries */}
-          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent border border-white/8 rounded-2xl">
+          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent rounded-2xl">
             <p className="text-xs text-indigo-400 font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
               <BarChart3 className="w-3.5 h-3.5" /> {t.preview.topCountries}
             </p>
@@ -262,7 +262,7 @@ export default function LandingPage() {
             ))}
           </div>
           {/* Plan */}
-          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent border border-white/8 rounded-2xl">
+          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent rounded-2xl">
             <p className="text-xs text-violet-400 font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
               <Clock className="w-3.5 h-3.5" /> {t.preview.plan}
             </p>
@@ -274,7 +274,7 @@ export default function LandingPage() {
             ))}
           </div>
           {/* Checklist */}
-          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent border border-white/8 rounded-2xl">
+          <div className="p-5 bg-gradient-to-b from-white/5 to-transparent rounded-2xl">
             <p className="text-xs text-green-400 font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5" /> {t.preview.checklist}
             </p>
@@ -299,7 +299,7 @@ export default function LandingPage() {
           {t.testimonials.items.map((item) => (
             <div
               key={item.name}
-              className="p-6 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/8 flex flex-col gap-4"
+              className="p-6 rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col gap-4"
             >
               <div className="flex text-amber-400 gap-0.5">
                 {[...Array(5)].map((_, i) => (
@@ -331,7 +331,7 @@ export default function LandingPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Free */}
-          <div className="p-7 rounded-2xl bg-gradient-to-b from-white/4 to-transparent border border-white/8">
+          <div className="p-7 rounded-2xl bg-gradient-to-b from-white/4 to-transparent">
             <p className="text-slate-400 text-sm mb-2">{t.pricing.free.name}</p>
             <div className="flex items-end gap-1 mb-1">
               <span className="text-4xl font-bold text-white">{t.pricing.free.price}</span>
@@ -346,7 +346,7 @@ export default function LandingPage() {
             </ul>
             <Link
               href="/register"
-              className="block text-center py-2.5 border border-white/10 hover:border-white/20 hover:bg-white/5 rounded-xl text-sm transition-all"
+              className="block text-center py-2.5 bg-white/5 hover:bg-white/9 rounded-xl text-sm transition-all"
             >
               {t.pricing.free.cta}
             </Link>
@@ -386,7 +386,7 @@ export default function LandingPage() {
             {t.faq.title}
           </h2>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {t.faq.items.map((item) => (
             <FaqItem key={item.q} q={item.q} a={item.a} />
           ))}
@@ -396,7 +396,7 @@ export default function LandingPage() {
       {/* Bottom CTA */}
       <section className="relative max-w-3xl mx-auto px-6 pb-24">
         <div className="relative p-12 rounded-3xl overflow-hidden text-center">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-violet-600/15 to-indigo-600/10 border border-indigo-500/20 rounded-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-violet-600/15 to-indigo-600/10 rounded-3xl" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(99,102,241,0.15)_0%,_transparent_70%)]" />
           <div className="relative">
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">

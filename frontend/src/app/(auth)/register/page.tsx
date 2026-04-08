@@ -49,7 +49,7 @@ export default function RegisterPage() {
             <input
               type="text" value={name} onChange={(e) => setName(e.target.value)}
               placeholder="Alex"
-              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
             />
           </div>
           <div>
@@ -57,7 +57,7 @@ export default function RegisterPage() {
             <input
               type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
             />
           </div>
           <div>
@@ -65,7 +65,7 @@ export default function RegisterPage() {
             <input
               type="password" required autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="Min 6 characters"
-              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-[#252d3d] rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+              className="w-full px-3.5 py-2.5 bg-[#161a22] border border-white/8 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
             />
           </div>
 

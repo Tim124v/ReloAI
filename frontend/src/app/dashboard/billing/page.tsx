@@ -67,21 +67,21 @@ function BillingContent() {
         </div>
       )}
       {canceled && (
-        <div className="mb-6 p-4 rounded-xl bg-slate-800/50 border border-[#252d3d] flex items-center gap-3">
+        <div className="mb-6 p-4 rounded-xl bg-white/[0.04] flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-slate-400" />
           <p className="text-slate-400 text-sm">Checkout canceled. No charge was made.</p>
         </div>
       )}
 
       {/* Plan card */}
-      <div className="p-6 bg-[#161a22] border border-[#252d3d] rounded-xl mb-6">
+      <div className="p-6 bg-[#161a22] rounded-xl mb-6 shadow-xl shadow-black/20">
         <div className="flex items-center justify-between mb-5">
           <div>
             <p className="text-sm text-slate-500 mb-1">Current plan</p>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold">{isPro ? 'Pro' : 'Free'}</span>
               {isPro && (
-                <span className="px-2 py-0.5 text-xs bg-indigo-900/50 border border-indigo-700/50 text-indigo-300 rounded-full">
+                <span className="px-2 py-0.5 text-xs bg-indigo-900/60 text-indigo-300 rounded-full">
                   Active
                 </span>
               )}
@@ -102,7 +102,7 @@ function BillingContent() {
               <span>This month's usage</span>
               <span>{used}/{FREE_LIMIT} analyses</span>
             </div>
-            <div className="h-1.5 bg-[#252d3d] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
                   usagePct >= 100 ? 'bg-red-500' : usagePct >= 60 ? 'bg-amber-500' : 'bg-indigo-500'
@@ -134,7 +134,7 @@ function BillingContent() {
         {isPro ? (
           <button
             onClick={openPortal} disabled={loadingPortal}
-            className="flex items-center gap-2 px-4 py-2.5 border border-[#252d3d] hover:border-indigo-600 rounded-lg text-sm text-slate-300 hover:text-white transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.09] rounded-lg text-sm text-slate-300 hover:text-white transition-colors disabled:opacity-50"
           >
             {loadingPortal && <Loader2 className="w-4 h-4 animate-spin" />}
             Manage subscription
@@ -152,7 +152,7 @@ function BillingContent() {
 
       {/* Pro features */}
       {!isPro && (
-        <div className="p-5 bg-indigo-900/10 border border-indigo-700/30 rounded-xl">
+        <div className="p-5 bg-indigo-900/15 rounded-xl">
           <p className="font-semibold mb-3 text-indigo-300 text-sm">Why upgrade to Pro?</p>
           <div className="space-y-2">
             {[

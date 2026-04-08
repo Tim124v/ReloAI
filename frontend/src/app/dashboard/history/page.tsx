@@ -84,7 +84,7 @@ export default function HistoryPage() {
           {items.map((item) => (
             <button
               key={item.id} onClick={() => openDetail(item.id)}
-              className="w-full flex items-center justify-between p-4 bg-[#161a22] border border-[#252d3d] rounded-xl hover:border-indigo-600/50 hover:bg-[#1e2330] transition-all text-left"
+              className="w-full flex items-center justify-between p-4 bg-[#161a22] hover:bg-[#1e2330] rounded-xl transition-all text-left"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-indigo-900/40 flex items-center justify-center">
@@ -108,8 +108,8 @@ export default function HistoryPage() {
       {/* Detail modal */}
       {(selected || loadingDetail) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-[#161a22] border border-[#252d3d] rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#252d3d]">
+          <div className="w-full max-w-2xl bg-[#161a22] rounded-2xl overflow-hidden flex flex-col max-h-[90vh] shadow-2xl shadow-black/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
               <h2 className="font-semibold">
                 {selected ? `${selected.input?.profession}` : 'Loading…'}
               </h2>
@@ -125,7 +125,7 @@ export default function HistoryPage() {
               ) : selected ? (
                 <div className="space-y-5">
                   {/* Input summary */}
-                  <div className="p-3 bg-[#0d0f14] border border-[#252d3d] rounded-lg text-xs text-slate-400 space-y-1">
+                  <div className="p-3 bg-white/[0.04] rounded-lg text-xs text-slate-400 space-y-1">
                     <div><span className="text-slate-600">Budget:</span> {selected.input?.budget}</div>
                     <div><span className="text-slate-600">Language:</span> {selected.input?.language}</div>
                     <div><span className="text-slate-600">Goals:</span> {selected.input?.goals}</div>
@@ -138,7 +138,7 @@ export default function HistoryPage() {
 
                   {/* Countries */}
                   {selected.result?.countries?.map((c, i) => (
-                    <div key={c.name} className="p-4 bg-[#0d0f14] border border-[#252d3d] rounded-lg">
+                    <div key={c.name} className="p-4 bg-white/[0.04] rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{c.flag}</span>
