@@ -1,0 +1,167 @@
+You are a senior fullstack engineer.
+Do NOT rebuild the project from scratch. Do NOT delete existing functionality.
+Your task is to REFACTOR and UPGRADE the existing project into a production-ready AI SaaS.
+
+Project context:
+
+* Existing app: ReloAI (AI-based relocation assistant)
+* Stack: Next.js + TypeScript (keep it)
+* Current state: basic AI demo (input → AI → output)
+* Goal: transform into a real SaaS product with architecture, persistence, and user system
+
+---
+
+## 🔥 REQUIREMENTS (MANDATORY)
+
+### 1. Convert into REAL SaaS
+
+Implement:
+
+* Authentication (use Supabase Auth or NextAuth)
+* User sessions (persistent login)
+* Each user must have isolated data
+* Usage tracking per user (store number of requests)
+* Limit system (e.g. 10 free requests per user)
+
+---
+
+### 2. Backend Architecture (CRITICAL)
+
+Refactor project structure WITHOUT breaking existing UI:
+
+Create layers:
+
+/app/api (controllers)
+/services (business logic)
+/repositories (DB access)
+/lib (clients: db, openai)
+/middleware (auth, rate limit)
+
+Rules:
+
+* API routes = controllers only
+* Move logic into services
+* Move DB queries into repositories
+* No business logic inside components
+
+---
+
+### 3. Database Integration
+
+Use Supabase:
+
+Create table:
+
+requests:
+
+* id
+* user_id
+* input
+* output
+* type (country | plan | visa | cost)
+* created_at
+
+Store EVERY AI request.
+
+---
+
+### 4. AI Product Logic (IMPORTANT)
+
+Replace simple prompt system with structured modes:
+
+* Country Analysis
+* Relocation Plan
+* Visa Guidance
+* Cost Estimation
+
+Each mode must:
+
+* generate different prompts
+* return structured output (sections, not raw text)
+
+---
+
+### 5. Dashboard (CORE FEATURE)
+
+Create /dashboard page:
+
+* Show user history (list of requests)
+* Ability to open previous result
+* Show usage count
+* Clean UI (cards or list)
+
+---
+
+### 6. UX Upgrade
+
+Replace single input with:
+
+* Step-by-step flow:
+  Step 1: choose mode
+  Step 2: input data
+  Step 3: result
+
+Add:
+
+* loading states
+* error handling UI
+* disabled buttons during requests
+
+---
+
+### 7. Production Features
+
+Add:
+
+* error handling (try/catch everywhere)
+* API validation
+* rate limiting (basic per user)
+* logging (console or simple logger)
+* fallback for AI errors
+
+---
+
+### 8. Code Quality
+
+* Use TypeScript types everywhere
+* Split large files
+* No duplicated logic
+* Clean imports
+* Reusable components
+
+---
+
+## ⚠️ CONSTRAINTS
+
+* DO NOT rewrite entire app
+* DO NOT remove existing working features
+* EXTEND and REFACTOR step-by-step
+* Show changes in small chunks
+* Explain what you change and why
+
+---
+
+## 🎯 OUTPUT FORMAT
+
+Work step-by-step:
+
+1. Analyze current structure
+2. Propose refactor plan
+3. Implement:
+
+   * Auth
+   * DB
+   * API refactor
+   * Dashboard
+4. Show updated code for each step
+
+Focus on:
+
+* architecture
+* scalability
+* real SaaS behavior
+
+---
+
+Goal:
+Transform this project from AI demo → production-ready SaaS suitable for a developer portfolio.
