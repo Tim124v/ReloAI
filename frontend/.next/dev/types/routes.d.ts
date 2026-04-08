@@ -3,7 +3,7 @@
 
 type AppRoutes = "/" | "/dashboard" | "/dashboard/billing" | "/dashboard/history" | "/login" | "/register"
 type AppRouteHandlerRoutes = "/api/ai/history" | "/api/ai/history/[id]" | "/api/ai/relocate" | "/api/auth/login" | "/api/auth/me" | "/api/auth/register" | "/api/billing/create-checkout" | "/api/billing/portal" | "/api/billing/webhook"
-type PageRoutes = "/_document" | "/_error"
+type PageRoutes = never
 type LayoutRoutes = "/" | "/dashboard"
 type RedirectRoutes = never
 type RewriteRoutes = never
@@ -12,8 +12,6 @@ type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRo
 
 interface ParamMap {
   "/": {}
-  "/_document": {}
-  "/_error": {}
   "/api/ai/history": {}
   "/api/ai/history/[id]": { "id": string; }
   "/api/ai/relocate": {}

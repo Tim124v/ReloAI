@@ -857,11 +857,6 @@ img, video {
   border-top-width: 1px;
 }
 
-.border-\[\#252d3d\] {
-  --tw-border-opacity: 1;
-  border-color: rgb(37 45 61 / var(--tw-border-opacity, 1));
-}
-
 .border-\[\#2a3347\] {
   --tw-border-opacity: 1;
   border-color: rgb(42 51 71 / var(--tw-border-opacity, 1));
@@ -1641,7 +1636,6 @@ img, video {
   --bg: #0d0f14;
   --surface: #161a22;
   --surface2: #1e2330;
-  --border: #252d3d;
   --text: #e2e8f0;
   --muted: #64748b;
   --brand: #6366f1;
@@ -1659,67 +1653,6 @@ body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.guide-content h2 {
-  --tw-border-opacity: 1;
-  border-bottom-width: 1px;
-  border-color: rgb(37 45 61 / var(--tw-border-opacity, 1));
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-  margin-top: 2rem;
-  margin-bottom: .75rem;
-  padding-bottom: .5rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.75rem;
-}
-
-.guide-content h3 {
-  --tw-text-opacity: 1;
-  color: rgb(165 180 252 / var(--tw-text-opacity, 1));
-  margin-top: 1.25rem;
-  margin-bottom: .5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.75rem;
-}
-
-.guide-content p {
-  --tw-text-opacity: 1;
-  color: rgb(203 213 225 / var(--tw-text-opacity, 1));
-  margin-bottom: .75rem;
-  line-height: 1.625;
-}
-
-.guide-content ul, .guide-content ol {
-  margin-bottom: 1rem;
-}
-
-.guide-content ul > :not([hidden]) ~ :not([hidden]), .guide-content ol > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(.25rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(.25rem * var(--tw-space-y-reverse));
-}
-
-.guide-content ul, .guide-content ol {
-  padding-left: 1.25rem;
-}
-
-.guide-content li {
-  --tw-text-opacity: 1;
-  color: rgb(203 213 225 / var(--tw-text-opacity, 1));
-}
-
-.guide-content strong {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-  font-weight: 600;
-}
-
-.guide-content em {
-  --tw-text-opacity: 1;
-  color: rgb(165 180 252 / var(--tw-text-opacity, 1));
-}
-
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -1731,22 +1664,6 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #2d3748;
   border-radius: 3px;
-}
-
-@keyframes blink {
-  0%, 100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
-}
-
-.cursor-blink:after {
-  content: "▌";
-  color: #6366f1;
-  animation: 1s step-start infinite blink;
 }
 
 .last\:border-0:last-child {
