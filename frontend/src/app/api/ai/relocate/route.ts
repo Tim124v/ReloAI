@@ -7,10 +7,12 @@ import { requireAuth } from '@/lib/server/auth';
 const FREE_LIMIT = 3;
 
 const schema = z.object({
+  type: z.enum(['country', 'plan']).default('country'),
   profession: z.string().min(1).max(200),
   budget: z.string().min(1).max(100),
   language: z.string().max(50).optional().default('English'),
-  goals: z.string().min(1).max(1000),
+  goals: z.string().max(1000).optional().default(''),
+  destination: z.string().max(200).optional().default(''),
 });
 
 export async function POST(request: NextRequest) {
@@ -44,11 +46,97 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'OPENAI_API_KEY is not configured.' }, { status: 500 });
   }
 
-  const { profession, budget, language, goals } = parsed.data;
+  const { type, profession, budget, language, goals, destination } = parsed.data;
 
-  const systemPrompt = `You are a world-class international relocation advisor with expertise in visas, taxes, cost of living, and expat communities. Based on the user's profile, recommend the 5 best countries for relocation. You MUST respond with valid JSON only — no markdown, no explanation, no text outside the JSON object.`;
+  let systemPrompt: string;
+  let userPrompt: string;
 
-  const userPrompt = `Analyze and recommend the 5 best countries for relocation for this profile:
+  if (type === 'plan') {
+    if (!destination?.trim()) {
+      return NextResponse.json({ error: 'Destination country is required for Relocation Plan' }, { status: 400 });
+    }
+
+    systemPrompt = `You are a world-class international relocation advisor. Create a detailed, actionable relocation plan for someone moving to a specific country. You MUST respond with valid JSON only — no markdown, no explanation, no text outside the JSON object.`;
+
+    userPrompt = `Create a detailed relocation plan for this profile moving to ${destination}:
+- Profession: ${profession}
+- Monthly budget: ${budget}
+- Working language: ${language}
+
+Respond with EXACTLY this JSON structure (no other text):
+{
+  "destination": "${destination}",
+  "summary": "2-3 sentence overview of relocating to ${destination} for this profile",
+  "phases": [
+    {
+      "phase": "Phase 1: Research & Preparation",
+      "duration": "Months 1-2",
+      "tasks": [
+        "Research visa options for ${destination}",
+        "Join expat communities online",
+        "Start language learning if needed"
+      ]
+    },
+    {
+      "phase": "Phase 2: Documentation",
+      "duration": "Months 2-4",
+      "tasks": [
+        "Gather required documents",
+        "Apostille on key certificates",
+        "Apply for visa"
+      ]
+    },
+    {
+      "phase": "Phase 3: Logistics",
+      "duration": "Months 4-5",
+      "tasks": [
+        "Find housing remotely",
+        "Arrange international health insurance",
+        "Notify banks of move"
+      ]
+    },
+    {
+      "phase": "Phase 4: The Move",
+      "duration": "Month 6",
+      "tasks": [
+        "Ship belongings or sell what you don't need",
+        "Book flights",
+        "Set up temporary accommodation"
+      ]
+    },
+    {
+      "phase": "Phase 5: Settling In",
+      "duration": "Months 6-12",
+      "tasks": [
+        "Register with local authorities",
+        "Open local bank account",
+        "Find long-term housing"
+      ]
+    }
+  ],
+  "requirements": [
+    "Passport valid 6+ months",
+    "Proof of income or employment",
+    "Criminal background check",
+    "Health insurance coverage"
+  ],
+  "costs": {
+    "visa": "Visa fee and processing cost",
+    "monthly": "Estimated monthly cost of living",
+    "oneTime": "One-time moving and setup costs"
+  },
+  "tips": [
+    "Practical tip specific to ${destination}",
+    "Tax or legal consideration",
+    "Cultural integration tip"
+  ]
+}
+
+Be specific to ${destination} and the profession. All tasks and tips should be actionable and tailored.`;
+  } else {
+    systemPrompt = `You are a world-class international relocation advisor with expertise in visas, taxes, cost of living, and expat communities. Based on the user's profile, recommend the 5 best countries for relocation. You MUST respond with valid JSON only — no markdown, no explanation, no text outside the JSON object.`;
+
+    userPrompt = `Analyze and recommend the 5 best countries for relocation for this profile:
 - Profession: ${profession}
 - Monthly budget: ${budget}
 - Preferred working language: ${language}
@@ -86,6 +174,7 @@ Respond with EXACTLY this JSON structure (no other text):
 }
 
 Tailor everything to the profession and goals. Be specific, not generic. Score from 0-100.`;
+  }
 
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -108,8 +197,11 @@ Tailor everything to the profession and goals. Be specific, not generic. Score f
       return NextResponse.json({ error: 'AI returned malformed JSON. Try again.' }, { status: 500 });
     }
 
-    if (!result.countries || !Array.isArray(result.countries) || result.countries.length === 0) {
+    if (type === 'country' && (!result.countries || !Array.isArray(result.countries) || result.countries.length === 0)) {
       return NextResponse.json({ error: 'AI returned incomplete data. Try again.' }, { status: 500 });
+    }
+    if (type === 'plan' && (!result.phases || !Array.isArray(result.phases))) {
+      return NextResponse.json({ error: 'AI returned incomplete plan data. Try again.' }, { status: 500 });
     }
 
     const record = await prisma.relocationRequest.create({
@@ -117,7 +209,7 @@ Tailor everything to the profession and goals. Be specific, not generic. Score f
         userId: user.id,
         profession,
         budget,
-        input: JSON.stringify({ profession, budget, language, goals }),
+        input: JSON.stringify({ type, profession, budget, language, goals, destination }),
         result: JSON.stringify(result),
         tokens: completion.usage?.total_tokens ?? 0,
       },
@@ -129,6 +221,7 @@ Tailor everything to the profession and goals. Be specific, not generic. Score f
     });
 
     return NextResponse.json({
+      type,
       result,
       requestId: record.id,
       tokens: completion.usage?.total_tokens ?? 0,
