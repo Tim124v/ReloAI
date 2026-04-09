@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { AnalysisMode, MODE_CONFIGS } from '@/services/ai.service';
 import type { CountryResult, PlanResult, VisaResult, CostResult } from '@/services/ai.service';
 
@@ -47,6 +48,8 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 function CountryCard({ country, rank }: { country: CountryResult['countries'][0]; rank: number }) {
+  const { t } = useI18n();
+  const r = t.dashboard.results;
   const [expanded, setExpanded] = useState(rank === 0);
   return (
     <div className={`rounded-xl ${rank === 0 ? 'bg-indigo-900/15' : 'bg-[#161a22]'}`}>
@@ -67,24 +70,24 @@ function CountryCard({ country, rank }: { country: CountryResult['countries'][0]
       {expanded && (
         <div className="px-5 pb-5 border-t border-white/5">
           <div className="mt-4 mb-4 space-y-1.5">
-            {country.reasons.map(r => (
-              <div key={r} className="flex items-start gap-2 text-sm text-slate-300">
-                <ArrowRight className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />{r}
+            {country.reasons.map((reason, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                <ArrowRight className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />{reason}
               </div>
             ))}
           </div>
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="p-3 rounded-lg bg-white/[0.04]"><p className="text-xs text-slate-500 mb-1">Visa</p><p className="text-sm text-slate-200">{country.visa}</p></div>
-            <div className="p-3 rounded-lg bg-white/[0.04]"><p className="text-xs text-slate-500 mb-1">Monthly cost</p><p className="text-sm text-slate-200 font-semibold">{country.cost}</p></div>
+            <div className="p-3 rounded-lg bg-white/[0.04]"><p className="text-xs text-slate-500 mb-1">{r.visa}</p><p className="text-sm text-slate-200">{country.visa}</p></div>
+            <div className="p-3 rounded-lg bg-white/[0.04]"><p className="text-xs text-slate-500 mb-1">{r.monthly}</p><p className="text-sm text-slate-200 font-semibold">{country.cost}</p></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-xs text-green-500 uppercase tracking-wider mb-2">Pros</p>
-              {country.pros.map(p => <div key={p} className="flex items-start gap-1.5 text-xs text-slate-400 mb-1"><CheckCircle2 className="w-3 h-3 text-green-500 shrink-0 mt-0.5" />{p}</div>)}
+              <p className="text-xs text-green-500 uppercase tracking-wider mb-2">{r.pros}</p>
+              {country.pros.map((p, i) => <div key={i} className="flex items-start gap-1.5 text-xs text-slate-400 mb-1"><CheckCircle2 className="w-3 h-3 text-green-500 shrink-0 mt-0.5" />{p}</div>)}
             </div>
             <div>
-              <p className="text-xs text-red-400 uppercase tracking-wider mb-2">Cons</p>
-              {country.cons.map(c => <div key={c} className="flex items-start gap-1.5 text-xs text-slate-400 mb-1"><span className="text-red-400 shrink-0">–</span>{c}</div>)}
+              <p className="text-xs text-red-400 uppercase tracking-wider mb-2">{r.cons}</p>
+              {country.cons.map((c, i) => <div key={i} className="flex items-start gap-1.5 text-xs text-slate-400 mb-1"><span className="text-red-400 shrink-0">–</span>{c}</div>)}
             </div>
           </div>
         </div>
@@ -94,17 +97,19 @@ function CountryCard({ country, rank }: { country: CountryResult['countries'][0]
 }
 
 function CountryResults({ result, checkedItems, onToggle }: { result: CountryResult; checkedItems: Set<number>; onToggle: (i: number) => void }) {
+  const { t } = useI18n();
+  const r = t.dashboard.results;
   return (
     <div className="space-y-6">
       <div className="p-5 bg-indigo-900/15 rounded-xl">
-        <p className="text-xs text-indigo-400 uppercase tracking-wider mb-2">Summary</p>
+        <p className="text-xs text-indigo-400 uppercase tracking-wider mb-2">{r.summary}</p>
         <p className="text-slate-200 leading-relaxed">{result.summary}</p>
       </div>
       <div className="space-y-3">
-        {result.countries.map((c, i) => <CountryCard key={c.name} country={c} rank={i} />)}
+        {result.countries.map((c, i) => <CountryCard key={i} country={c} rank={i} />)}
       </div>
       <div className="bg-[#161a22] rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Roadmap</h3></div>
+        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.roadmap}</h3></div>
         <div className="p-5 space-y-3">
           {result.plan.map((step, i) => (
             <div key={i} className="flex items-start gap-3">
@@ -116,7 +121,7 @@ function CountryResults({ result, checkedItems, onToggle }: { result: CountryRes
       </div>
       <div className="bg-[#161a22] rounded-xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-sm">Checklist</h3>
+          <h3 className="font-semibold text-sm">{r.checklist}</h3>
           <span className="text-xs text-slate-500">{checkedItems.size}/{result.checklist.length}</span>
         </div>
         <div className="p-5 space-y-2">
@@ -135,14 +140,16 @@ function CountryResults({ result, checkedItems, onToggle }: { result: CountryRes
 }
 
 function PlanResults({ result }: { result: PlanResult }) {
+  const { t } = useI18n();
+  const r = t.dashboard.results;
   return (
     <div className="space-y-6">
       <div className="p-5 bg-blue-900/15 rounded-xl">
-        <p className="text-xs text-blue-400 uppercase tracking-wider mb-2">Relocation Plan — {result.destination}</p>
+        <p className="text-xs text-blue-400 uppercase tracking-wider mb-2">{t.dashboard.modes.plan.label} — {result.destination}</p>
         <p className="text-slate-200 leading-relaxed">{result.summary}</p>
       </div>
       <div className="bg-[#161a22] rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Timeline</h3></div>
+        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.timeline}</h3></div>
         <div className="p-5 space-y-4">
           {result.phases.map((phase, i) => (
             <div key={i} className="flex gap-4">
@@ -168,26 +175,26 @@ function PlanResults({ result }: { result: PlanResult }) {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3">
-        {[['Visa', result.costs.visa], ['Monthly', result.costs.monthly], ['Setup', result.costs.oneTime]].map(([label, val]) => (
-          <div key={label} className="p-4 bg-[#161a22] rounded-xl">
-            <p className="text-xs text-slate-500 mb-1">{label}</p>
+        {([['visa', result.costs.visa], ['monthly', result.costs.monthly], ['setup', result.costs.oneTime]] as const).map(([key, val]) => (
+          <div key={key} className="p-4 bg-[#161a22] rounded-xl">
+            <p className="text-xs text-slate-500 mb-1">{r[key as 'visa' | 'monthly' | 'setup']}</p>
             <p className="text-sm text-slate-200 font-semibold">{val}</p>
           </div>
         ))}
       </div>
       <div className="bg-[#161a22] rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Required documents</h3></div>
+        <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.requiredDocs}</h3></div>
         <div className="p-5 space-y-2">
-          {result.requirements.map((r, i) => (
+          {result.requirements.map((req, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
-              <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />{r}
+              <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />{req}
             </div>
           ))}
         </div>
       </div>
       {result.tips?.length > 0 && (
         <div className="bg-[#161a22] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Pro tips</h3></div>
+          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.proTips}</h3></div>
           <div className="p-5 space-y-2">
             {result.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -202,11 +209,13 @@ function PlanResults({ result }: { result: PlanResult }) {
 }
 
 function VisaResults({ result }: { result: VisaResult }) {
+  const { t } = useI18n();
+  const r = t.dashboard.results;
   const difficultyColor = { easy: 'text-green-400', moderate: 'text-amber-400', hard: 'text-red-400' };
   return (
     <div className="space-y-6">
       <div className="p-5 bg-emerald-900/15 rounded-xl">
-        <p className="text-xs text-emerald-400 uppercase tracking-wider mb-2">Visa Guidance — {result.destination}</p>
+        <p className="text-xs text-emerald-400 uppercase tracking-wider mb-2">{t.dashboard.modes.visa.label} — {result.destination}</p>
         <p className="text-slate-200 leading-relaxed">{result.summary}</p>
       </div>
       {result.visaTypes.map((visa, i) => (
@@ -221,26 +230,26 @@ function VisaResults({ result }: { result: VisaResult }) {
             </span>
           </div>
           <div className="p-5 grid grid-cols-3 gap-3 mb-4">
-            {[['Duration', visa.duration], ['Cost', visa.cost], ['Processing', visa.processingTime]].map(([label, val]) => (
-              <div key={label} className="p-3 rounded-lg bg-white/[0.04]">
-                <p className="text-xs text-slate-500 mb-1">{label}</p>
+            {([['duration', visa.duration], ['cost', visa.cost], ['processing', visa.processingTime]] as const).map(([key, val]) => (
+              <div key={key} className="p-3 rounded-lg bg-white/[0.04]">
+                <p className="text-xs text-slate-500 mb-1">{r[key as 'duration' | 'cost' | 'processing']}</p>
                 <p className="text-sm text-slate-200">{val}</p>
               </div>
             ))}
           </div>
           <div className="px-5 pb-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Requirements</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{r.requirements}</p>
               <ul className="space-y-1.5">
-                {visa.requirements.map((r, j) => (
+                {visa.requirements.map((req, j) => (
                   <li key={j} className="flex items-start gap-2 text-sm text-slate-400">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />{r}
+                    <ArrowRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />{req}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Process</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">{r.process}</p>
               <ol className="space-y-1.5">
                 {visa.process.map((step, j) => (
                   <li key={j} className="flex items-start gap-2 text-sm text-slate-400">
@@ -254,7 +263,7 @@ function VisaResults({ result }: { result: VisaResult }) {
       ))}
       {result.documents?.length > 0 && (
         <div className="bg-[#161a22] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Documents checklist</h3></div>
+          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.docChecklist}</h3></div>
           <div className="p-5 space-y-2">
             {result.documents.map((doc, i) => (
               <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -266,7 +275,7 @@ function VisaResults({ result }: { result: VisaResult }) {
       )}
       {result.tips?.length > 0 && (
         <div className="bg-[#161a22] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Tips</h3></div>
+          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.tips}</h3></div>
           <div className="p-5 space-y-2">
             {result.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -281,17 +290,22 @@ function VisaResults({ result }: { result: VisaResult }) {
 }
 
 function CostResults({ result }: { result: CostResult }) {
+  const { t } = useI18n();
+  const r = t.dashboard.results;
   const breakdownKeys = ['housing', 'food', 'transport', 'utilities', 'healthcare', 'entertainment'] as const;
-  const labels: Record<string, string> = { housing: 'Housing', food: 'Food & dining', transport: 'Transport', utilities: 'Utilities', healthcare: 'Healthcare', entertainment: 'Entertainment' };
+  const labels: Record<string, string> = {
+    housing: r.housing, food: r.food, transport: r.transport,
+    utilities: r.utilities, healthcare: r.healthcare, entertainment: r.entertainment,
+  };
   return (
     <div className="space-y-6">
       <div className="p-5 bg-amber-900/15 rounded-xl">
-        <p className="text-xs text-amber-400 uppercase tracking-wider mb-2">Cost Estimation — {result.destination} · {result.lifestyle}</p>
+        <p className="text-xs text-amber-400 uppercase tracking-wider mb-2">{t.dashboard.modes.cost.label} — {result.destination} · {result.lifestyle}</p>
         <p className="text-slate-200 leading-relaxed">{result.summary}</p>
       </div>
       <div className="bg-[#161a22] rounded-xl overflow-hidden">
         <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-          <h3 className="font-semibold text-sm">Monthly breakdown</h3>
+          <h3 className="font-semibold text-sm">{r.monthlyBreakdown}</h3>
           <span className="text-sm font-bold text-amber-300">{result.total.min} – {result.total.max}</span>
         </div>
         <div className="p-5 space-y-4">
@@ -312,13 +326,13 @@ function CostResults({ result }: { result: CostResult }) {
       </div>
       {result.comparison && (
         <div className="p-4 bg-white/[0.04] rounded-xl">
-          <p className="text-xs text-slate-500 mb-1">Comparison</p>
+          <p className="text-xs text-slate-500 mb-1">{r.comparison}</p>
           <p className="text-sm text-slate-300">{result.comparison}</p>
         </div>
       )}
       {result.tips?.length > 0 && (
         <div className="bg-[#161a22] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">Money-saving tips</h3></div>
+          <div className="px-5 py-4 border-b border-white/5"><h3 className="font-semibold text-sm">{r.savingTips}</h3></div>
           <div className="p-5 space-y-2">
             {result.tips.map((tip, i) => (
               <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
@@ -334,6 +348,8 @@ function CostResults({ result }: { result: CostResult }) {
 
 export default function DashboardPage() {
   const { user, refreshUser } = useAuth();
+  const { t } = useI18n();
+  const d = t.dashboard;
   const [step, setStep] = useState<WizardStep>('mode');
   const [mode, setMode] = useState<AnalysisMode | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -361,12 +377,19 @@ export default function DashboardPage() {
 
   const setField = (key: string, value: string) => setFields(prev => ({ ...prev, [key]: value }));
 
+  const getFieldLabel = (fieldKey: string, fallback: string): string => {
+    if (!mode) return fallback;
+    const modeFields = d.modes[mode].fields as Record<string, string>;
+    return modeFields[fieldKey] ?? fallback;
+  };
+
   const submit = async () => {
     if (!mode) return;
     const config = MODE_CONFIGS[mode];
     for (const f of config.fields) {
       if (f.required && !fields[f.key]?.trim()) {
-        setError(`${f.label} is required`);
+        const label = getFieldLabel(f.key, f.label);
+        setError(`${label} — ${d.fieldRequired}`);
         return;
       }
     }
@@ -392,7 +415,7 @@ export default function DashboardPage() {
   const toggleCheck = (i: number) =>
     setCheckedItems(prev => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; });
 
-  const stepLabels = ['Choose mode', 'Enter details', 'View results'];
+  const stepLabels = d.steps;
   const currentStepIdx = step === 'mode' ? 0 : step === 'input' ? 1 : 2;
 
   return (
@@ -401,10 +424,10 @@ export default function DashboardPage() {
         <div className="mb-6 p-4 rounded-xl bg-amber-900/20 border border-amber-700/40 flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-amber-300 font-medium text-sm">Monthly limit reached</p>
-            <p className="text-amber-400/70 text-xs mt-0.5">Free plan: {FREE_LIMIT} analyses/month. Upgrade to Pro for unlimited.</p>
+            <p className="text-amber-300 font-medium text-sm">{d.limitTitle}</p>
+            <p className="text-amber-400/70 text-xs mt-0.5">{d.limitDesc}</p>
           </div>
-          <Link href="/dashboard/billing" className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-xs font-semibold text-white whitespace-nowrap transition-colors">Upgrade →</Link>
+          <Link href="/dashboard/billing" className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-xs font-semibold text-white whitespace-nowrap transition-colors">{d.upgrade} →</Link>
         </div>
       )}
 
@@ -424,20 +447,20 @@ export default function DashboardPage() {
           </div>
         ))}
         {remaining !== null && (
-          <span className="ml-auto text-xs text-slate-500">{remaining}/{FREE_LIMIT} remaining</span>
+          <span className="ml-auto text-xs text-slate-500">{remaining}/{FREE_LIMIT}</span>
         )}
       </div>
 
       {/* Step 1: Mode selection */}
       {step === 'mode' && (
         <div>
-          <h2 className="text-lg font-bold mb-1">What do you need?</h2>
-          <p className="text-slate-500 text-sm mb-6">Choose an analysis type to get started</p>
+          <h2 className="text-lg font-bold mb-1">{d.heading}</h2>
+          <p className="text-slate-500 text-sm mb-6">{d.subheading}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(Object.keys(MODE_CONFIGS) as AnalysisMode[]).map(m => {
               const Icon = MODE_ICONS[m];
-              const config = MODE_CONFIGS[m];
               const gradient = MODE_COLORS[m];
+              const modeT = d.modes[m];
               return (
                 <button
                   key={m}
@@ -448,10 +471,10 @@ export default function DashboardPage() {
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
                     <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <p className="font-semibold text-white mb-1">{config.label}</p>
-                  <p className="text-sm text-slate-500">{config.description}</p>
+                  <p className="font-semibold text-white mb-1">{modeT.label}</p>
+                  <p className="text-sm text-slate-500">{modeT.description}</p>
                   <div className="mt-4 flex items-center gap-1 text-xs text-slate-600 group-hover:text-indigo-400 transition-colors">
-                    Get started <ArrowRight className="w-3 h-3" />
+                    {d.getStarted} <ArrowRight className="w-3 h-3" />
                   </div>
                 </button>
               );
@@ -464,21 +487,21 @@ export default function DashboardPage() {
       {step === 'input' && mode && (
         <div>
           <button onClick={goBack} className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-4 h-4" /> {d.back}
           </button>
           <div className="bg-[#161a22] rounded-xl overflow-hidden shadow-xl shadow-black/20">
             <div className="px-5 py-4 border-b border-white/5 flex items-center gap-3">
               {(() => { const Icon = MODE_ICONS[mode]; return <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${MODE_COLORS[mode]} flex items-center justify-center`}><Icon className="w-4 h-4 text-white" /></div>; })()}
               <div>
-                <h2 className="font-semibold">{MODE_CONFIGS[mode].label}</h2>
-                <p className="text-xs text-slate-500">{MODE_CONFIGS[mode].description}</p>
+                <h2 className="font-semibold">{d.modes[mode].label}</h2>
+                <p className="text-xs text-slate-500">{d.modes[mode].description}</p>
               </div>
             </div>
             <div className="px-5 py-5 space-y-4">
               {MODE_CONFIGS[mode].fields.map(field => (
                 <div key={field.key}>
                   <label className="block text-xs text-slate-500 mb-1.5">
-                    {field.label}{field.required && ' *'}
+                    {getFieldLabel(field.key, field.label)}{field.required && ' *'}
                   </label>
                   {field.type === 'select' ? (
                     <select
@@ -517,7 +540,7 @@ export default function DashboardPage() {
                 className={`flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r ${MODE_COLORS[mode]} hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-sm transition-all`}
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (() => { const Icon = MODE_ICONS[mode]; return <Icon className="w-4 h-4" />; })()}
-                {loading ? 'Analyzing…' : `Run ${MODE_CONFIGS[mode].label}`}
+                {loading ? d.analyzing : d.modes[mode].label}
               </button>
             </div>
           </div>
@@ -525,8 +548,8 @@ export default function DashboardPage() {
           {loading && (
             <div className="mt-6 bg-[#161a22] rounded-xl p-8 text-center">
               <Loader2 className="w-8 h-8 animate-spin text-indigo-400 mx-auto mb-4" />
-              <p className="text-slate-300 font-medium">Running AI analysis…</p>
-              <p className="text-slate-500 text-sm mt-1">This usually takes 5–10 seconds</p>
+              <p className="text-slate-300 font-medium">{d.aiRunning}</p>
+              <p className="text-slate-500 text-sm mt-1">{d.aiWait}</p>
             </div>
           )}
         </div>
@@ -537,13 +560,13 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <button onClick={goBack} className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Edit inputs
+              <ArrowLeft className="w-4 h-4" /> {d.editInputs}
             </button>
             <button
               onClick={() => { setStep('mode'); setMode(null); setResult(null); }}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] rounded-lg text-slate-400 hover:text-white transition-colors"
             >
-              <MapPin className="w-3.5 h-3.5" /> New analysis
+              <MapPin className="w-3.5 h-3.5" /> {d.newAnalysis}
             </button>
           </div>
 

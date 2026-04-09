@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 import { MapPin, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { t } = useI18n();
+  const a = t.auth.login;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,13 +40,13 @@ export default function LoginPage() {
           <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6 text-sm transition-colors">
             <MapPin className="w-4 h-4" /> ReloAI
           </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-          <p className="text-slate-500 text-sm mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-white">{a.title}</h1>
+          <p className="text-slate-500 text-sm mt-1">{a.subtitle}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1.5">Email</label>
+            <label className="block text-sm text-slate-400 mb-1.5">{a.email}</label>
             <input
               type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -51,7 +54,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-slate-400 mb-1.5">Password</label>
+            <label className="block text-sm text-slate-400 mb-1.5">{a.password}</label>
             <input
               type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -68,13 +71,13 @@ export default function LoginPage() {
             className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? a.signingIn : a.submit}
           </button>
         </form>
 
         <p className="text-center text-sm text-slate-500 mt-6">
-          No account?{' '}
-          <Link href="/register" className="text-indigo-400 hover:text-indigo-300 transition-colors">Create one free</Link>
+          {a.noAccount}{' '}
+          <Link href="/register" className="text-indigo-400 hover:text-indigo-300 transition-colors">{a.createFree}</Link>
         </p>
       </div>
     </div>
