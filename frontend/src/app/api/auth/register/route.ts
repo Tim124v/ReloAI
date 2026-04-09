@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
       token,
       user: { id: user.id, email: user.email, name: user.name, plan: user.plan, monthlyUsage: user.monthlyUsage },
     });
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  } catch (err: unknown) {
+    const e = err as { message?: string; code?: string };
+    console.error('[register] error:', e?.message, e?.code);
+    return NextResponse.json({ error: 'Server error', detail: e?.message }, { status: 500 });
   }
 }
