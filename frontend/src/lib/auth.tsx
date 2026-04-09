@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { api, TOKEN_KEY } from './api';
 
 interface User {
@@ -24,19 +24,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes idle → logout
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearSession = () => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setUser(null);
+  };
+
+  const resetInactivityTimer = () => {
+    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    inactivityTimer.current = setTimeout(() => {
+      clearSession();
+    }, INACTIVITY_MS);
+  };
 
   const refreshUser = async () => {
     try {
       const data = await api.get<User>('/api/auth/me');
       setUser(data);
-    } catch {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem(TOKEN_KEY);
+    } catch (err: any) {
+      // Only clear session on auth errors (401/403), NOT on network errors
+      if (err?.status === 401 || err?.status === 403) {
+        clearSession();
+      }
+      // On network/server errors, keep the token — user stays logged in
     }
   };
 
@@ -50,6 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Reset inactivity timer on any user activity
+  useEffect(() => {
+    if (!user) return;
+    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+    const handler = () => resetInactivityTimer();
+    events.forEach(e => window.addEventListener(e, handler, { passive: true }));
+    resetInactivityTimer();
+    return () => {
+      events.forEach(e => window.removeEventListener(e, handler));
+      if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    };
+  }, [user]);
+
   const login = (newToken: string, newUser: User) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
@@ -57,9 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
-    setUser(null);
+    if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+    clearSession();
   };
 
   return (

@@ -63,18 +63,33 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$ap
 ;
 ;
 const AuthContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["createContext"])(null);
+const INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes idle → logout
 function AuthProvider({ children }) {
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [token, setToken] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
+    const inactivityTimer = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const clearSession = ()=>{
+        localStorage.removeItem(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TOKEN_KEY"]);
+        setToken(null);
+        setUser(null);
+    };
+    const resetInactivityTimer = ()=>{
+        if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+        inactivityTimer.current = setTimeout(()=>{
+            clearSession();
+        }, INACTIVITY_MS);
+    };
     const refreshUser = async ()=>{
         try {
             const data = await __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].get('/api/auth/me');
             setUser(data);
-        } catch  {
-            setUser(null);
-            setToken(null);
-            localStorage.removeItem(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TOKEN_KEY"]);
+        } catch (err) {
+            // Only clear session on auth errors (401/403), NOT on network errors
+            if (err?.status === 401 || err?.status === 403) {
+                clearSession();
+            }
+        // On network/server errors, keep the token — user stays logged in
         }
     };
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
@@ -86,15 +101,36 @@ function AuthProvider({ children }) {
             setLoading(false);
         }
     }, []);
+    // Reset inactivity timer on any user activity
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (!user) return;
+        const events = [
+            'mousemove',
+            'keydown',
+            'click',
+            'touchstart',
+            'scroll'
+        ];
+        const handler = ()=>resetInactivityTimer();
+        events.forEach((e)=>window.addEventListener(e, handler, {
+                passive: true
+            }));
+        resetInactivityTimer();
+        return ()=>{
+            events.forEach((e)=>window.removeEventListener(e, handler));
+            if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+        };
+    }, [
+        user
+    ]);
     const login = (newToken, newUser)=>{
         localStorage.setItem(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TOKEN_KEY"], newToken);
         setToken(newToken);
         setUser(newUser);
     };
     const logout = ()=>{
-        localStorage.removeItem(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TOKEN_KEY"]);
-        setToken(null);
-        setUser(null);
+        if (inactivityTimer.current) clearTimeout(inactivityTimer.current);
+        clearSession();
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
         value: {
@@ -108,7 +144,7 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/frontend/src/lib/auth.tsx",
-        lineNumber: 66,
+        lineNumber: 96,
         columnNumber: 5
     }, this);
 }
