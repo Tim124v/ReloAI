@@ -178,8 +178,8 @@ export default function LandingPage() {
       {/* Stats bar */}
       <section className="relative max-w-4xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {stats.map(({ icon: Icon, value, label }) => (
-            <div key={label} className="text-center p-5 rounded-2xl bg-white/[0.03] backdrop-blur-sm">
+          {stats.map(({ icon: Icon, value, label }, i) => (
+            <div key={i} className="text-center p-5 rounded-2xl bg-white/[0.03] backdrop-blur-sm">
               <Icon className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
               <p className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{value}</p>
               <p className="text-xs text-slate-500 mt-1">{label}</p>
@@ -226,9 +226,9 @@ export default function LandingPage() {
             { icon: TrendingUp, ...t.features.items[1] },
             { icon: Globe, ...t.features.items[2] },
             { icon: Lock, ...t.features.items[3] },
-          ].map(({ icon: Icon, title, desc }) => (
+          ].map(({ icon: Icon, title, desc }, i) => (
             <div
-              key={title}
+              key={i}
               className="p-5 rounded-2xl bg-gradient-to-b from-white/5 to-transparent hover:from-white/7 transition-all group"
             >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center mb-4 group-hover:from-indigo-500/30 group-hover:to-violet-500/30 transition-all">
@@ -255,7 +255,7 @@ export default function LandingPage() {
               <BarChart3 className="w-3.5 h-3.5" /> {t.preview.topCountries}
             </p>
             {t.preview.countries.map((c, i) => (
-              <div key={c} className="flex items-center gap-2 py-2 border-b border-white/5 last:border-0">
+              <div key={i} className="flex items-center gap-2 py-2 border-b border-white/5 last:border-0">
                 <span className="text-xs text-slate-500 w-4">{i + 1}</span>
                 <span className="text-sm text-slate-300">{c}</span>
               </div>
@@ -278,8 +278,8 @@ export default function LandingPage() {
             <p className="text-xs text-green-400 font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5" /> {t.preview.checklist}
             </p>
-            {t.preview.checks.map((item) => (
-              <div key={item} className="flex items-center gap-2 py-2 border-b border-white/5 last:border-0">
+            {t.preview.checks.map((item, i) => (
+              <div key={i} className="flex items-center gap-2 py-2 border-b border-white/5 last:border-0">
                 <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
                 <span className="text-sm text-slate-300">{item}</span>
               </div>
@@ -296,9 +296,9 @@ export default function LandingPage() {
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {t.testimonials.items.map((item) => (
+          {t.testimonials.items.map((item, i) => (
             <div
-              key={item.name}
+              key={i}
               className="p-6 rounded-2xl bg-gradient-to-b from-white/5 to-transparent flex flex-col gap-4"
             >
               <div className="flex text-amber-400 gap-0.5">
@@ -338,8 +338,8 @@ export default function LandingPage() {
             </div>
             <p className="text-slate-500 text-xs mb-7">{t.pricing.free.desc}</p>
             <ul className="space-y-3 mb-7">
-              {t.pricing.free.features.map((f) => (
-                <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
+              {t.pricing.free.features.map((f, i) => (
+                <li key={i} className="flex items-center gap-2.5 text-sm text-slate-300">
                   <CheckCircle2 className="w-4 h-4 text-slate-600 shrink-0" />{f}
                 </li>
               ))}
@@ -363,8 +363,8 @@ export default function LandingPage() {
             </div>
             <p className="text-slate-500 text-xs mb-7">{t.pricing.pro.desc}</p>
             <ul className="space-y-3 mb-7">
-              {t.pricing.pro.features.map((f) => (
-                <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
+              {t.pricing.pro.features.map((f, i) => (
+                <li key={i} className="flex items-center gap-2.5 text-sm text-slate-300">
                   <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />{f}
                 </li>
               ))}
@@ -387,8 +387,8 @@ export default function LandingPage() {
           </h2>
         </div>
         <div className="space-y-2">
-          {t.faq.items.map((item) => (
-            <FaqItem key={item.q} q={item.q} a={item.a} />
+          {t.faq.items.map((item, i) => (
+            <FaqItem key={i} q={item.q} a={item.a} />
           ))}
         </div>
       </section>
