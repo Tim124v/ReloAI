@@ -7,8 +7,14 @@ import { aiRoutes } from './routes/ai';
 import { billingRoutes } from './routes/billing';
 
 const app = Fastify({ logger: { level: 'warn' } });
+let setupPromise: Promise<void> | null = null;
 
-async function main() {
+async function setupApp() {
+  if (setupPromise) {
+    return setupPromise;
+  }
+
+  setupPromise = (async () => {
   await app.register(rawBody, { runFirst: true });
 
   await app.register(cors, {
@@ -47,13 +53,29 @@ async function main() {
       return reply.code(500).send({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
     }
   });
+  })();
 
-  const port = parseInt(process.env.PORT || '8080');
-  await app.listen({ port, host: '0.0.0.0' });
-  console.info(`\n✅ Backend running on http://localhost:${port}\n`);
+  return setupPromise;
+}
+
+async function main() {
+  await setupApp();
+
+  if (process.env.VERCEL !== '1') {
+    const port = parseInt(process.env.PORT || '8080');
+    await app.listen({ port, host: '0.0.0.0' });
+    console.info(`\n✅ Backend running on http://localhost:${port}\n`);
+  }
 }
 
 main().catch((err) => {
   console.error('Failed to start server:', err);
   process.exit(1);
 });
+
+// Vercel serverless export
+export default async function handler(req: any, res: any) {
+  await setupApp();
+  await app.ready();
+  app.server.emit('request', req, res);
+}
