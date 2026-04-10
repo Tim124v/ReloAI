@@ -31,8 +31,7 @@ async function setupApp() {
 
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
-    console.error('FATAL: JWT_SECRET environment variable is not set.');
-    process.exit(1);
+    throw new Error('JWT_SECRET environment variable is not set.');
   }
   await app.register(jwt, { secret: jwtSecret });
 
@@ -61,21 +60,35 @@ async function setupApp() {
 async function main() {
   await setupApp();
 
-  if (process.env.VERCEL !== '1') {
-    const port = parseInt(process.env.PORT || '8080');
-    await app.listen({ port, host: '0.0.0.0' });
-    console.info(`\n✅ Backend running on http://localhost:${port}\n`);
-  }
+  const port = parseInt(process.env.PORT || '8080');
+  await app.listen({ port, host: '0.0.0.0' });
+  console.info(`\n✅ Backend running on http://localhost:${port}\n`);
 }
 
-main().catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+if (process.env.VERCEL !== '1') {
+  main().catch((err) => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });
+}
 
 // Vercel serverless export
 export default async function handler(req: any, res: any) {
-  await setupApp();
-  await app.ready();
-  app.server.emit('request', req, res);
+  try {
+    await setupApp();
+    await app.ready();
+    app.server.emit('request', req, res);
+  } catch (error) {
+    console.error('[serverless] request failed before handler init', error);
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.setHeader('content-type', 'application/json; charset=utf-8');
+      res.end(
+        JSON.stringify({
+          error: 'Server initialization failed',
+          code: 'SERVER_INIT_FAILED',
+        }),
+      );
+    }
+  }
 }
