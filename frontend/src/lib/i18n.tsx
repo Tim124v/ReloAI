@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { translations, type Locale } from './i18n-data';
+import { createContext, useContext, ReactNode } from 'react';
+import { uiTranslations as translations, type Locale } from './i18n-data';
 
 interface I18nContextType {
   locale: Locale;
@@ -12,17 +12,8 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('en');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('relo_lang') as Locale | null;
-    if (stored && translations[stored]) setLocaleState(stored);
-  }, []);
-
-  const setLocale = (l: Locale) => {
-    setLocaleState(l);
-    localStorage.setItem('relo_lang', l);
-  };
+  const locale: Locale = 'en';
+  const setLocale = (_l: Locale) => {};
 
   return (
     <I18nContext.Provider value={{ locale, setLocale, t: translations[locale] }}>

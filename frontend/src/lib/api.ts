@@ -1,33 +1,50 @@
-const TOKEN_KEY = 'relo_token';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+export const TOKEN_KEY = 'token';
 
-const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null);
+const getStoredToken = () => (typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null);
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-  const res = await fetch(path, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
+const buildUrl = (path: string) => {
+  if (/^https?:\/\//.test(path)) return path;
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_URL}${normalizedPath}`;
+};
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw Object.assign(new Error(err.error || err.message || 'Request failed'), {
-      status: res.status,
-      data: err,
+type ApiFetchOptions = RequestInit & { rawResponse?: boolean };
+
+export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
+  const token = getStoredToken();
+  const headers = new Headers(options.headers);
+
+  if (!headers.has('Content-Type') && options.body) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  const response = await fetch(buildUrl(path), { ...options, headers });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    const message =
+      (payload && typeof payload === 'object' && ('error' in payload || 'message' in payload)
+        ? ((payload as { error?: string; message?: string }).error ||
+          (payload as { error?: string; message?: string }).message)
+        : null) || `Request failed (${response.status})`;
+
+    throw Object.assign(new Error(message), {
+      status: response.status,
+      data: payload,
     });
   }
 
-  return res.json() as Promise<T>;
+  if (options.rawResponse) return response;
+  if (response.status === 204) return null;
+  return response.json();
 }
 
 export const api = {
-  get: <T>(path: string) => request<T>(path),
+  get: <T>(path: string) => apiFetch(path) as Promise<T>,
   post: <T>(path: string, body: unknown) =>
-    request<T>(path, { method: 'POST', body: JSON.stringify(body) }),
+    apiFetch(path, { method: 'POST', body: JSON.stringify(body) }) as Promise<T>,
 };
-
-export { TOKEN_KEY };

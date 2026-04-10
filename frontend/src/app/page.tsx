@@ -7,44 +7,6 @@ import {
   MapPin, ChevronDown, Star, Users, Clock, TrendingUp
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { LOCALES, type Locale } from '@/lib/i18n-data';
-
-function LanguageSwitcher() {
-  const { locale, setLocale } = useI18n();
-  const [open, setOpen] = useState(false);
-  const current = LOCALES.find(l => l.code === locale)!;
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm"
-      >
-        <span>{current.flag}</span>
-        <span className="hidden sm:block">{current.label}</span>
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-2 w-40 bg-[#1a1f2e] border border-[#2a3347] rounded-xl shadow-2xl z-50 overflow-hidden">
-            {LOCALES.map(l => (
-              <button
-                key={l.code}
-                onClick={() => { setLocale(l.code as Locale); setOpen(false); }}
-                className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-white/5 transition-colors text-left ${locale === l.code ? 'text-indigo-400' : 'text-slate-300'}`}
-              >
-                <span>{l.flag}</span>
-                <span>{l.label}</span>
-                {locale === l.code && <CheckCircle2 className="w-3.5 h-3.5 ml-auto text-indigo-400" />}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -88,23 +50,22 @@ export default function LandingPage() {
 
       {/* Navbar */}
       <nav className="relative z-10 border-b border-white/5 backdrop-blur-md bg-[#080a0f]/80 sticky top-0">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-2 md:px-6 md:py-4 h-14 md:h-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
               <MapPin className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+            <span className="font-bold text-base md:text-lg tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               ReloAI
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <Link href="/login" className="px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm">
+            <Link href="/login" className="px-3 py-1 text-slate-400 hover:text-white transition-colors text-sm md:px-4 md:py-2">
               {t.nav.signIn}
             </Link>
             <Link
               href="/register"
-              className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30"
+              className="hidden md:inline-flex px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30"
             >
               {t.nav.getStarted}
             </Link>

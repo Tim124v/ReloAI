@@ -15,6 +15,8 @@ async function main() {
     origin: [
       process.env.FRONTEND_URL || 'http://localhost:5000',
       'http://localhost:5000',
+      'http://localhost:5001',
+      'http://127.0.0.1:5001',
       'http://localhost:3000',
     ],
     credentials: true,
@@ -37,11 +39,18 @@ async function main() {
   // Phase 7: Stripe billing
   await app.register(billingRoutes, { prefix: '/api/billing' });
 
-  app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
+  app.get('/health', async (_request, reply) => {
+    try {
+      return { status: 'ok', timestamp: new Date().toISOString() };
+    } catch (error) {
+      console.error('[health] failed', error);
+      return reply.code(500).send({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
+    }
+  });
 
   const port = parseInt(process.env.PORT || '8080');
   await app.listen({ port, host: '0.0.0.0' });
-  console.log(`\n✅ Backend running on http://localhost:${port}\n`);
+  console.info(`\n✅ Backend running on http://localhost:${port}\n`);
 }
 
 main().catch((err) => {

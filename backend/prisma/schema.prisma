@@ -13,16 +13,17 @@ enum Plan {
 }
 
 model User {
-  id                   String               @id @default(cuid())
+  id                   String               @id @default(uuid())
   email                String               @unique
   password             String
   name                 String?
-  plan                 Plan                 @default(FREE)
+  plan                 String               @default("free")
   monthlyUsage         Int                  @default(0)
   usageResetAt         DateTime             @default(now())
   stripeCustomerId     String?              @unique
   stripeSubscriptionId String?              @unique
   subscriptionStatus   String?
+  requests             Request[]
   analyses             RelocationRequest[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
@@ -38,4 +39,14 @@ model RelocationRequest {
   result     String   @db.Text
   tokens     Int      @default(0)
   createdAt  DateTime @default(now())
+}
+
+model Request {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  mode      String
+  input     Json
+  output    Json
+  createdAt DateTime @default(now())
 }

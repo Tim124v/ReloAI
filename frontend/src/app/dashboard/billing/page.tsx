@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 const FREE_LIMIT = 3;
+const PAYMENTS_SOON_MESSAGE = 'Payment setup in progress. Contact us to upgrade.';
 
 function BillingContent() {
   const { user, refreshUser } = useAuth();
@@ -29,8 +30,8 @@ function BillingContent() {
         returnUrl: window.location.origin,
       });
       if (data.url) window.location.href = data.url;
-    } catch (err: unknown) {
-      setApiError(err instanceof Error ? err.message : 'Failed to start checkout. Make sure Stripe is configured.');
+    } catch {
+      setApiError(PAYMENTS_SOON_MESSAGE);
     } finally {
       setLoadingCheckout(false);
     }
@@ -42,8 +43,8 @@ function BillingContent() {
     try {
       const data = await api.post<{ url: string }>('/api/billing/portal', {});
       if (data.url) window.location.href = data.url;
-    } catch (err: unknown) {
-      setApiError(err instanceof Error ? err.message : 'Failed to open billing portal.');
+    } catch {
+      setApiError(PAYMENTS_SOON_MESSAGE);
     } finally {
       setLoadingPortal(false);
     }
