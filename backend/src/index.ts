@@ -65,7 +65,13 @@ async function main() {
   console.info(`\n✅ Backend running on http://localhost:${port}\n`);
 }
 
-if (process.env.VERCEL !== '1') {
+const isServerlessRuntime =
+  process.env.VERCEL === '1' ||
+  Boolean(process.env.AWS_REGION) ||
+  Boolean(process.env.LAMBDA_TASK_ROOT) ||
+  process.env.NODE_ENV === 'production';
+
+if (!isServerlessRuntime) {
   main().catch((err) => {
     console.error('Failed to start server:', err);
     process.exit(1);
