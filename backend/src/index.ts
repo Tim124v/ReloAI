@@ -44,6 +44,14 @@ async function setupApp() {
   // Phase 7: Stripe billing
   await app.register(billingRoutes, { prefix: '/api/billing' });
 
+  app.get('/', async () => {
+    return {
+      status: 'ok',
+      service: 'reloai-backend',
+      docs: '/health',
+    };
+  });
+
   app.get('/health', async (_request, reply) => {
     try {
       return { status: 'ok', timestamp: new Date().toISOString() };
