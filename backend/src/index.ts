@@ -17,14 +17,23 @@ async function setupApp() {
   setupPromise = (async () => {
   await app.register(rawBody, { runFirst: true });
 
+  const allowedOrigins = new Set([
+    process.env.FRONTEND_URL || 'http://localhost:5000',
+    'http://localhost:5000',
+    'http://localhost:5001',
+    'http://127.0.0.1:5001',
+    'http://localhost:3000',
+  ]);
+  const vercelPreviewPattern = /^https:\/\/relo-ai(?:-[a-z0-9]+)?\.vercel\.app$/i;
+
   await app.register(cors, {
-    origin: [
-      process.env.FRONTEND_URL || 'http://localhost:5000',
-      'http://localhost:5000',
-      'http://localhost:5001',
-      'http://127.0.0.1:5001',
-      'http://localhost:3000',
-    ],
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.has(origin) || vercelPreviewPattern.test(origin)) {
+        return cb(null, true);
+      }
+      return cb(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
