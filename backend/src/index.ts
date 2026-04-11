@@ -5,6 +5,7 @@ import rawBody from 'fastify-raw-body';
 import { authRoutes } from './routes/auth';
 import { aiRoutes } from './routes/ai';
 import { billingRoutes } from './routes/billing';
+import { requestRoutes } from './routes/requests';
 
 const app = Fastify({ logger: { level: 'warn' } });
 let setupPromise: Promise<void> | null = null;
@@ -52,6 +53,7 @@ async function setupApp() {
 
   // Phase 7: Stripe billing
   await app.register(billingRoutes, { prefix: '/api/billing' });
+  await app.register(requestRoutes, { prefix: '/api/requests' });
 
   app.get('/', async () => {
     return {

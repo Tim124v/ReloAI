@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { sendWelcomeEmail } from '../services/email.service';
 
 const FREE_LIMIT = 3;
 
@@ -40,6 +41,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       const hashed = await bcrypt.hash(password, 12);
       const user = await prisma.user.create({ data: { email, password: hashed, name } });
+      sendWelcomeEmail(email).catch(console.error);
       console.info('[auth] new user registered', { userId: user.id, email: user.email });
 
       const token = fastify.jwt.sign({ userId: user.id, email: user.email }, { expiresIn: '7d' });

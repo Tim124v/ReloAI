@@ -33,8 +33,7 @@ export default function LandingPage() {
 
   const stats = [
     { icon: Globe, value: '195', label: t.stats.countries },
-    { icon: Users, value: '12K+', label: t.stats.users },
-    { icon: Star, value: '4.9★', label: t.stats.rating },
+    { icon: Users, value: 'Beta', label: t.stats.users },
     { icon: Clock, value: '< 3', label: t.stats.time },
   ];
 
@@ -79,6 +78,10 @@ export default function LandingPage() {
           <Zap className="w-3.5 h-3.5" />
           {t.hero.badge}
         </div>
+
+        <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+          Beta — Free during launch
+        </span>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-[1.05] tracking-tight">
           <span className="bg-gradient-to-br from-white via-white to-slate-400 bg-clip-text text-transparent">
@@ -280,6 +283,9 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
+        <p className="text-center text-xs text-gray-400 mt-4">
+          * Illustrative examples
+        </p>
       </section>
 
       {/* Pricing */}
