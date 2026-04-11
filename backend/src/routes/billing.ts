@@ -4,17 +4,22 @@ import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authenticate } from '../middleware/auth';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
+const getStripeClient = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_NOT_CONFIGURED');
+  return new Stripe(key, { apiVersion: '2023-10-16' });
+};
 
 const PRICE_ID = process.env.STRIPE_PRICE_ID || '';
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+const checkoutBodySchema = z.object({ returnUrl: z.string().url().optional() }).passthrough();
 const emptyBodySchema = z.object({}).passthrough();
 const webhookBodySchema = z.unknown();
 
 export async function billingRoutes(fastify: FastifyInstance) {
   fastify.post('/create-checkout', { preHandler: authenticate }, async (request, reply) => {
     try {
-      const parsed = emptyBodySchema.safeParse(request.body ?? {});
+      const parsed = checkoutBodySchema.safeParse(request.body ?? {});
       if (!parsed.success) {
         return reply.code(400).send({
           error: 'Validation failed',
@@ -24,8 +29,8 @@ export async function billingRoutes(fastify: FastifyInstance) {
       }
 
       const user = request.currentUser;
-
-      if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_placeholder') {
+      const stripe = getStripeClient();
+      if (process.env.STRIPE_SECRET_KEY === 'sk_test_placeholder') {
         return reply.code(503).send({
           error: 'Payment system is not configured yet.',
           code: 'STRIPE_NOT_CONFIGURED',
@@ -43,18 +48,40 @@ export async function billingRoutes(fastify: FastifyInstance) {
         await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } });
       }
 
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const frontendUrl = parsed.data.returnUrl || process.env.FRONTEND_URL || 'http://localhost:3000';
+      const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = PRICE_ID
+        ? { price: PRICE_ID, quantity: 1 }
+        : {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'ReloAI Pro',
+                description: 'Unlimited AI analyses per month',
+              },
+              unit_amount: 900,
+              recurring: { interval: 'month' },
+            },
+            quantity: 1,
+          };
+
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ['card'],
-        line_items: [{ price: PRICE_ID, quantity: 1 }],
+        line_items: [lineItem],
         mode: 'subscription',
-        success_url: `${frontendUrl}/dashboard/billing?success=true`,
-        cancel_url: `${frontendUrl}/dashboard/billing?canceled=true`,
+        success_url: `${frontendUrl}/dashboard?upgrade=success`,
+        cancel_url: `${frontendUrl}/dashboard?upgrade=cancelled`,
+        metadata: { userId: user.id },
       });
 
       return { url: session.url };
     } catch (error) {
+      if (error instanceof Error && error.message === 'STRIPE_NOT_CONFIGURED') {
+        return reply.code(503).send({
+          error: 'Payment system is not configured yet.',
+          code: 'STRIPE_NOT_CONFIGURED',
+        });
+      }
       console.error('[billing] create-checkout failed', error);
       return reply.code(500).send({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
     }
@@ -72,6 +99,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
       }
 
       const user = request.currentUser;
+      const stripe = getStripeClient();
       if (!user.stripeCustomerId) return reply.code(400).send({ error: 'No billing account found', code: 'NO_BILLING' });
 
       const session = await stripe.billingPortal.sessions.create({
@@ -99,6 +127,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
 
       const sig = request.headers['stripe-signature'] as string;
       if (!sig || !WEBHOOK_SECRET) return reply.code(400).send({ error: 'Missing signature', code: 'INVALID_WEBHOOK' });
+      const stripe = getStripeClient();
 
       let event: Stripe.Event;
       try {
