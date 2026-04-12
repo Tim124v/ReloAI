@@ -48,3 +48,11 @@ Thumbs.db
 .agents/
 .local/
 replit.nix
+node_modules/
+.replit
+replit.md
+.next/
+dist/
+.env
+*.tsbuildinfo
+.DS_Store
